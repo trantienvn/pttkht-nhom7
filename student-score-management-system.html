@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Lý Điểm Sinh Viên Đại Học</title>
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #f1f3f4;
+            --accent-color: #4285f4;
+            --text-color: #202124;
+            --light-text: #5f6368;
+            --success-color: #0f9d58;
+            --warning-color: #f4b400;
+            --error-color: #d93025;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: var(--text-color);
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+            position: relative;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0;
+            display: block;
+        }
+        
+        nav ul li a:hover {
+            text-decoration: underline;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            border-radius: 4px;
+        }
+        
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: var(--secondary-color);
+            text-decoration: none;
+        }
+        
+        nav ul li:hover .dropdown-content {
+            display: block;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .dashboard {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-right: 2rem;
+        }
+        
+        .sidebar h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            padding: 0.7rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .content {
+            flex: 1;
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+        
+        .user-greeting {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+            font-size: 1rem;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+            font-weight: 500;
+            color: var(--light-text);
+        }
+        
+        tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+        
+        .filter-options {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .filter-group label {
+            margin-right: 0.5rem;
+            color: var(--light-text);
+        }
+        
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        .export-btn {
+            background-color: #34a853;
+        }
+        
+        .export-btn:hover {
+            background-color: #2e8644;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background-color: rgba(15, 157, 88, 0.1);
+            color: var(--success-color);
+        }
+        
+        .badge-warning {
+            background-color: rgba(244, 180, 0, 0.1);
+            color: var(--warning-color);
+        }
+        
+        .badge-danger {
+            background-color: rgba(217, 48, 37, 0.1);
+            color: var(--error-color);
+        }
+        
+        .login-container {
+            max-width: 400px;
+            margin: 4rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .alert-danger {
+            background-color: rgba(217, 48, 37, 0.1);
+            color: var(--error-color);
+            border: 1px solid rgba(217, 48, 37, 0.2);
+        }
+        
+        .alert-success {
+            background-color: rgba(15, 157, 88, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(15, 157, 88, 0.2);
+        }
+        
+        footer {
+            background-color: var(--secondary-color);
+            color: var(--light-text);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 1.5rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+            }
+            
+            nav ul li {
+                margin-left: 0;
+                margin-bottom: 0.5rem;
+            }
+            
+            .dropdown-content {
+                position: static;
+                box-shadow: none;
+                display: none;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-card .number {
+                font-size: 1.5rem;
+            }
+            
+            .login-form {
+                margin: 1rem;
+            }
+        }
+
+        /* Tabs for student score view */
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Login screen styles */
+        .login-screen {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary-color);
+        }
+
+        .login-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .user-type {
+            display: flex;
+            margin-bottom: 1.5rem;
+        }
+
+        .user-type label {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .user-type label:first-child {
+            margin-right: 0.5rem;
+        }
+
+        .user-type input[type="radio"] {
+            display: none;
+        }
+
+        .user-type input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Login Screen (Initially Visible) -->
+        <div id="login-screen" class="login-screen">
+            <div class="login-form">
+                <h2>Hệ Thống Quản Lý Điểm Sinh Viên</h2>
+                <div class="user-type">
+                    <input type="radio" id="student" name="user-type" value="student" checked>
+                    <label for="student">Sinh viên</label>
+                    <input type="radio" id="teacher" name="user-type" value="teacher">
+                    <label for="teacher">Giảng viên</label>
+                </div>
+                <div class="form-group">
+                    <label for="username">Tên đăng nhập</label>
+                    <input type="text" id="username" placeholder="Nhập mã số sinh viên/giảng viên">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" placeholder="Nhập mật khẩu">
+                </div>
+                <button type="button" onclick="login()">Đăng nhập</button>
+            </div>
+        </div>
+
+        <!-- Main Application (Initially Hidden) -->
+        <div id="main-app" style="display: none;">
+            <header>
+                <div class="logo">
+                    <img src="https://placehold.co/40x40" alt="Logo" style="height: 40px;">
+                    STUDENT SCORE MANAGEMENT
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" onclick="showDashboard()">Trang chủ</a></li>
+                        <li>
+                            <a href="#">Quản lý</a>
+                            <div class="dropdown-content">
+                                <a href="#" onclick="showStudentView()">Xem điểm</a>
+                                <a href="#" onclick="showInputScoreView()">Nhập điểm</a>
+                                <a href="#" onclick="showExportScoreView()">Xuất điểm</a>
+                            </div>
+                        </li>
+                        <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <main>
+                <div class="dashboard">
+                    <div class="sidebar">
+                        <h3>Menu</h3>
+                        <ul>
+                            <li><a href="#" class="active" onclick="showDashboard()">Tổng quan</a></li>
+                            <li><a href="#" onclick="showStudentView()">Xem điểm</a></li>
+                            <li><a href="#" id="input-score-menu" onclick="showInputScoreView()">Nhập điểm</a></li>
+                            <li><a href="#" id="export-score-menu" onclick="showExportScoreView()">Xuất điểm</a></li>
+                            <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="content">
+                        <!-- Dashboard View -->
+                        <div id="dashboard-view">
+                            <h2>Tổng quan</h2>
+                            <div class="user-greeting">
+                                <div>
+                                    <h3>Xin chào, <span id="user-name">Người dùng</span>!</h3>
+                                    <p>Chào mừng bạn đến với hệ thống quản lý điểm sinh viên.</p>
+                                </div>
+                                <div>
+                                    <span id="current-date"></span>
+                                </div>
+                            </div>
+
+                            <div class="stats">
+                                <div class="stat-card">
+                                    <h3>Môn học</h3>
+                                    <div class="number">8</div>
+                                    <p>Đã đăng ký học kỳ này</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h3>Điểm trung bình</h3>
+                                    <div class="number">7.85</div>
+                                    <p>Học kỳ hiện tại</p>
+                                </div>
+                                <div class="stat-card">
+                                    <h3>Tín chỉ</h3>
+                                    <div class="number">24</div>
+                                    <p>Đã tích lũy</p>
+                                </div>
+                            </div>
+
+                            <div class="card">
+                                <h3>Thông báo mới nhất</h3>
+                                <ul style="margin: 1rem 0 0 1.5rem;" id="notifications"></ul>
+                            </div>
+                        </div>
+
+                        <!-- Student View (Xem điểm) -->
+                        <div id="student-view" style="display: none;">
+                            <h2>Xem điểm sinh viên</h2>
+                            <div class="filter-options">
+                                <div class="filter-group">
+                                    <label for="semester">Học kỳ:</label>
+                                    <select id="semester">
+                                        <option value="1">Học kỳ 1 - 2024/2025</option>
+                                        <option value="2" selected>Học kỳ 2 - 2024/2025</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="search-input">Tìm kiếm:</label>
+                                    <input type="text" id="search-input" placeholder="Nhập mã hoặc tên môn học" onkeyup="searchScores()">
+                                </div>
+                                <button type="button" onclick="filterScores()">Lọc</button>
+                            </div>
+
+                            <div class="tabs">
+                                <div class="tab active" onclick="switchTab('semester-scores')">Điểm học kỳ</div>
+                                <div class="tab" onclick="switchTab('cumulative-scores')">Điểm tích lũy</div>
+                            </div>
+
+                            <div id="semester-scores" class="tab-content active">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Mã môn học</th>
+                                            <th>Tên môn học</th>
+                                            <th>Số tín chỉ</th>
+                                            <th>Điểm quá trình</th>
+                                            <th>Điểm thi</th>
+                                            <th>Điểm tổng kết</th>
+                                            <th>Điểm chữ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3"><strong>Tổng kết học kỳ</strong></td>
+                                            <td><strong>12</strong></td>
+                                            <td colspan="2"></td>
+                                            <td><strong>7.85</strong></td>
+                                            <td><strong>B+</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <div id="cumulative-scores" class="tab-content">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Học kỳ</th>
+                                            <th>Năm học</th>
+                                            <th>Số tín chỉ</th>
+                                            <th>Điểm TB học kỳ</th>
+                                            <th>Điểm TB tích lũy</th>
+                                            <th>Xếp loại</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>2024/2025</td>
+                                            <td>12</td>
+                                            <td>7.65</td>
+                                            <td>7.65</td>
+                                            <td><span class="badge badge-success">Khá</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>2024/2025</td>
+                                            <td>12</td>
+                                            <td>7.85</td>
+                                            <td>7.75</td>
+                                            <td><span class="badge badge-success">Khá</span></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2"><strong>Tổng tích lũy</strong></td>
+                                            <td><strong>24</strong></td>
+                                            <td></td>
+                                            <td><strong>7.75</strong></td>
+                                            <td><strong>Khá</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Input Score View (Nhập điểm) -->
+                        <div id="input-score-view" style="display: none;">
+                            <h2>Nhập điểm sinh viên</h2>
+                            <div class="filter-options">
+                                <div class="filter-group">
+                                    <label for="course-input">Môn học:</label>
+                                    <select id="course-input">
+                                        <option value="COMP101">COMP101 - Lập trình cơ bản</option>
+                                        <option value="MATH202">MATH202 - Toán rời rạc</option>
+                                        <option value="ENG111">ENG111 - Tiếng Anh chuyên ngành</option>
+                                        <option value="COMP225">COMP225 - Cơ sở dữ liệu</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="class-input">Lớp:</label>
+                                    <select id="class-input">
+                                        <option value="CS2301">CS2301</option>
+                                        <option value="CS2302">CS2302</option>
+                                    </select>
+                                </div>
+                                <button type="button" onclick="loadClassStudents()">Lấy danh sách</button>
+                            </div>
+
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Mã SV</th>
+                                        <th>Họ và tên</th>
+                                        <th>Điểm chuyên cần</th>
+                                        <th>Điểm giữa kỳ</th>
+                                        <th>Điểm cuối kỳ</th>
+                                        <th>Điểm tổng kết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td>SV001</td>
+                                        <td>Nguyễn Văn A</td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.5" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="7.5" style="width: 60px;"></td>
+                                        <td>8.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td>SV002</td>
+                                        <td>Trần Thị B</td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="7.0" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="7.5" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0" style="width: 60px;"></td>
+                                        <td>7.5</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td>SV003</td>
+                                        <td>Lê Văn C</td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="9.0" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.5" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0" style="width: 60px;"></td>
+                                        <td>8.5</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div style="margin-top: 1rem; text-align: right;">
+                                <button type="button" class="export-btn" onclick="calculateFinalScores()">Tính điểm tổng kết</button>
+                                <button type="button" onclick="saveScores()">Lưu điểm</button>
+                            </div>
+                        </div>
+
+                        <!-- Export Score View (Xuất điểm) -->
+                        <div id="export-score-view" style="display: none;">
+                            <h2>Xuất điểm sinh viên</h2>
+                            <div class="filter-options">
+                                <div class="filter-group">
+                                    <label for="export-course">Môn học:</label>
+                                    <select id="export-course">
+                                        <option value="COMP101">COMP101 - Lập trình cơ bản</option>
+                                        <option value="MATH202">MATH202 - Toán rời rạc</option>
+                                        <option value="ENG111">ENG111 - Tiếng Anh chuyên ngành</option>
+                                        <option value="COMP225">COMP225 - Cơ sở dữ liệu</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="export-class">Lớp:</label>
+                                    <select id="export-class">
+                                        <option value="CS2301">CS2301</option>
+                                        <option value="CS2302">CS2302</option>
+                                    </select>
+                                </div>
+                                <button type="button" onclick="exportScores()">Xuất file</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Hệ Thống Quản Lý Điểm Sinh Viên. Mọi quyền được bảo lưu.</p>
+        <p>Hướng dẫn: Sử dụng tài khoản "admin" và mật khẩu "123456" để đăng nhập thử nghiệm.</p>
+    </footer>
+
+    <script>
+        // Dữ liệu giả lập
+        const scoreData = {
+            "semester-scores": [
+                { id: 1, code: "COMP101", name: "Lập trình cơ bản", credits: 3, diligence: 8.5, midterm: 7.5, final: 8.0, grade: "A" },
+                { id: 2, code: "MATH202", name: "Toán rời rạc", credits: 3, diligence: 7.0, midterm: 8.0, final: 7.5, grade: "B+" },
+                { id: 3, code: "ENG111", name: "Tiếng Anh chuyên ngành", credits: 2, diligence: 6.5, midterm: 7.0, final: 6.8, grade: "B" },
+                { id: 4, code: "COMP225", name: "Cơ sở dữ liệu", credits: 4, diligence: 8.0, midterm: 8.5, final: 8.3, grade: "A" }
+            ]
+        };
+
+        // Xác thực đăng nhập
+        function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            const userType = document.querySelector('input[name="user-type"]:checked').value;
+
+            // if (username === "admin" && password === "123456") {
+                document.getElementById("login-screen").style.display = "none";
+                document.getElementById("main-app").style.display = "block";
+                document.getElementById("user-name").textContent = userType === "student" ? "Sinh viên " + username : "Giảng viên " + username;
+                
+                document.getElementById("input-score-menu").style.display = userType === "teacher" ? "block" : "none";
+                document.getElementById("export-score-menu").style.display = userType === "teacher" ? "block" : "none";
+            // } else {
+            //     alert("Tên đăng nhập hoặc mật khẩu không đúng!");
+            // }
+        }
+
+        function logout() {
+            document.getElementById("main-app").style.display = "none";
+            document.getElementById("login-screen").style.display = "flex";
+        }
+
+        function showDashboard() {
+            document.getElementById("dashboard-view").style.display = "block";
+            document.getElementById("student-view").style.display = "none";
+            document.getElementById("input-score-view").style.display = "none";
+            document.getElementById("export-score-view").style.display = "none";
+        }
+
+        function showStudentView() {
+            document.getElementById("dashboard-view").style.display = "none";
+            document.getElementById("student-view").style.display = "block";
+            document.getElementById("input-score-view").style.display = "none";
+            document.getElementById("export-score-view").style.display = "none";
+            loadSemesterScores();
+        }
+
+        function showInputScoreView() {
+            document.getElementById("dashboard-view").style.display = "none";
+            document.getElementById("student-view").style.display = "none";
+            document.getElementById("input-score-view").style.display = "block";
+            document.getElementById("export-score-view").style.display = "none";
+        }
+
+        function showExportScoreView() {
+            document.getElementById("dashboard-view").style.display = "none";
+            document.getElementById("student-view").style.display = "none";
+            document.getElementById("input-score-view").style.display = "none";
+            document.getElementById("export-score-view").style.display = "block";
+        }
+
+        function filterScores() {
+            alert("Lọc điểm theo học kỳ đã chọn.");
+        }
+
+        function exportScores() {
+            alert("Xuất file điểm cho lớp và môn học đã chọn.");
+        }
+
+        function loadSemesterScores() {
+            const tbody = document.querySelector("#semester-scores tbody");
+            tbody.innerHTML = scoreData["semester-scores"].map(s => `
+                <tr>
+                    <td>${s.id}</td>
+                    <td>${s.code}</td>
+                    <td>${s.name}</td>
+                    <td>${s.credits}</td>
+                    <td>${s.diligence}</td>
+                    <td>${s.midterm}</td>
+                    <td>${s.final}</td>
+                    <td><span class="badge badge-success">${s.grade}</span></td>
+                </tr>
+            `).join("");
+        }
+
+        function searchScores() {
+            const searchTerm = document.getElementById("search-input").value.toLowerCase();
+            const rows = document.querySelectorAll("#semester-scores tbody tr");
+            rows.forEach(row => {
+                const courseCode = row.cells[1].textContent.toLowerCase();
+                const courseName = row.cells[2].textContent.toLowerCase();
+                row.style.display = (courseCode.includes(searchTerm) || courseName.includes(searchTerm)) ? "" : "none";
+            });
+        }
+
+        function calculateFinalScores() {
+            const rows = document.querySelectorAll("#input-score-view tbody tr");
+            rows.forEach(row => {
+                const diligence = parseFloat(row.cells[3].querySelector("input").value) || 0;
+                const midterm = parseFloat(row.cells[4].querySelector("input").value) || 0;
+                const final = parseFloat(row.cells[5].querySelector("input").value) || 0;
+                const totalScore = (diligence * 0.3 + midterm * 0.3 + final * 0.4).toFixed(1);
+                row.cells[6].textContent = totalScore;
+            });
+            alert("Đã tính điểm tổng kết!");
+        }
+
+        function saveScores() {
+            alert("Đã lưu điểm!");
+        }
+
+        function loadClassStudents() {
+            alert("Đã tải danh sách sinh viên theo lớp và môn học đã chọn.");
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab").forEach(tab => tab.classList.remove("active"));
+            document.querySelectorAll(".tab-content").forEach(content => content.classList.remove("active"));
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add("active");
+            document.getElementById(tabId).classList.add("active");
+        }
+
+        // Hiển thị ngày hiện tại và thông báo động
+        document.getElementById("current-date").textContent = new Date().toLocaleDateString("vi-VN");
+        const today = new Date();
+        const notifications = [
+            `Các môn học học kỳ 2 năm học 2024-2025 đã có điểm (Cập nhật: ${today.toLocaleDateString("vi-VN")}).`,
+            "Sinh viên đăng ký môn học học kỳ 3 trước ngày 20/03/2025.",
+            "Thông báo về lịch thi cuối kỳ học kỳ 2 năm học 2024-2025."
+        ];
+        document.getElementById("notifications").innerHTML = notifications.map(n => `<li>${n}</li>`).join("");
+    </script>
+</body>
+</html>
