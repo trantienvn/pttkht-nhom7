@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý Điểm Sinh Viên Đại Học</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="app">
         <!-- Login Screen (Initially Visible) -->
@@ -35,7 +37,7 @@
             <header>
                 <div class="logo">
                     <img src="https://placehold.co/40x40" alt="Logo" style="height: 40px;">
-                    STUDENT SCORE MANAGEMENT
+                    Hệ Thống Quản Lý Điểm Sinh Viên
                 </div>
                 <nav>
                     <ul>
@@ -59,7 +61,7 @@
                         <h3>Menu</h3>
                         <ul>
                             <li><a href="#" class="active" onclick="showDashboard()">Tổng quan</a></li>
-                            <li><a href="#" onclick="showStudentView()">Xem điểm</a></li>
+                            <li><a href="#" onclick="showView()">Xem điểm</a></li>
                             <li><a href="#" id="input-score-menu" onclick="showInputScoreView()">Nhập điểm</a></li>
                             <li><a href="#" id="export-score-menu" onclick="showExportScoreView()">Xuất điểm</a></li>
                             <li><a href="#" onclick="logout()">Đăng xuất</a></li>
@@ -103,6 +105,50 @@
                                 <ul style="margin: 1rem 0 0 1.5rem;" id="notifications"></ul>
                             </div>
                         </div>
+                        <!-- Cập nhật tính năng xem điểm cho giảng viên -->
+                        <div id="teacher-view" style="display: none;">
+                            <h2>Xem điểm sinh viên</h2>
+                            <div class="filter-options">
+                                <div class="filter-group">
+                                    <label for="teacher-semester">Học kỳ:</label>
+                                    <select id="teacher-semester">
+                                        <option value="1">Học kỳ 1 - 2024/2025</option>
+                                        <option value="2" selected>Học kỳ 2 - 2024/2025</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="teacher-class">Lớp:</label>
+                                    <select id="teacher-class">
+                                        <option value="all">Tất cả lớp</option>
+                                        <option value="CS2301">CS2301</option>
+                                        <option value="CS2302">CS2302</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="teacher-search">Tìm kiếm:</label>
+                                    <input type="text" id="teacher-search" placeholder="Nhập mã hoặc tên môn học"
+                                        onkeyup="searchTeacherScores()">
+                                </div>
+                                <button type="button" onclick="filterTeacherScores()">Lọc</button>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Mã SV</th>
+                                        <th>Họ và tên</th>
+                                        <th>Lớp</th>
+                                        <th>Môn học</th>
+                                        <th>Số tín chỉ</th>
+                                        <th>Điểm quá trình</th>
+                                        <th>Điểm thi</th>
+                                        <th>Điểm tổng kết</th>
+                                        <th>Điểm chữ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="teacher-score-table"></tbody>
+                            </table>
+                        </div>
 
                         <!-- Student View (Xem điểm) -->
                         <div id="student-view" style="display: none;">
@@ -117,7 +163,8 @@
                                 </div>
                                 <div class="filter-group">
                                     <label for="search-input">Tìm kiếm:</label>
-                                    <input type="text" id="search-input" placeholder="Nhập mã hoặc tên môn học" onkeyup="searchScores()">
+                                    <input type="text" id="search-input" placeholder="Nhập mã hoặc tên môn học"
+                                        onkeyup="searchScores()">
                                 </div>
                                 <button type="button" onclick="filterScores()">Lọc</button>
                             </div>
@@ -237,34 +284,44 @@
                                         <td>1</td>
                                         <td>SV001</td>
                                         <td>Nguyễn Văn A</td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="8.5" style="width: 60px;"></td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0" style="width: 60px;"></td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="7.5" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.5"
+                                                style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0"
+                                                style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="7.5"
+                                                style="width: 60px;"></td>
                                         <td>8.0</td>
                                     </tr>
                                     <tr>
                                         <td>2</td>
                                         <td>SV002</td>
                                         <td>Trần Thị B</td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="7.0" style="width: 60px;"></td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="7.5" style="width: 60px;"></td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="7.0"
+                                                style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="7.5"
+                                                style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0"
+                                                style="width: 60px;"></td>
                                         <td>7.5</td>
                                     </tr>
                                     <tr>
                                         <td>3</td>
                                         <td>SV003</td>
                                         <td>Lê Văn C</td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="9.0" style="width: 60px;"></td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="8.5" style="width: 60px;"></td>
-                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0" style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="9.0"
+                                                style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.5"
+                                                style="width: 60px;"></td>
+                                        <td><input type="number" min="0" max="10" step="0.1" value="8.0"
+                                                style="width: 60px;"></td>
                                         <td>8.5</td>
                                     </tr>
                                 </tbody>
                             </table>
 
                             <div style="margin-top: 1rem; text-align: right;">
-                                <button type="button" class="export-btn" onclick="calculateFinalScores()">Tính điểm tổng kết</button>
+                                <button type="button" class="export-btn" onclick="calculateFinalScores()">Tính điểm tổng
+                                    kết</button>
                                 <button type="button" onclick="saveScores()">Lưu điểm</button>
                             </div>
                         </div>
@@ -305,4 +362,5 @@
 
     <script src="script.js"></script>
 </body>
+
 </html>
